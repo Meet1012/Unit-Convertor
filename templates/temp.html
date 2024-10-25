@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Unit Converter</title>
+    <style>
+      body {
+        font-family: "Comic Sans MS", sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .converter-container {
+        background-color: white;
+        border: 2px solid #333;
+        border-radius: 10px;
+        width: 29%;
+        padding: 20px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+        text-align: center;
+        color: #333;
+        font-size: 1.8rem;
+        margin-bottom: 20px;
+      }
+
+      .tab-menu {
+        display: flex;
+        justify-content: space-around;
+        margin-bottom: 20px;
+      }
+
+      .tab-menu a {
+        text-decoration: none;
+        color: #333;
+        font-size: 1.1rem;
+        font-weight: bold;
+        padding-bottom: 5px;
+        cursor: pointer;
+      }
+
+      .tab-menu a.active {
+        color: #007bff;
+        border-bottom: 2px solid #007bff;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        display: none; /* Hide all forms by default */
+      }
+
+      form.active {
+        display: flex; /* Only the active form will be shown */
+      }
+
+      form .label {
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+      }
+
+      form .p {
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 2px solid #333;
+        border-radius: 5px;
+        font-size: 1rem;
+      }
+
+      button[type="submit"] {
+        margin-left: 20%;
+        max-width: 40%;
+        background-color: rgb(187, 187, 235);
+        border: 2px solid #333;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: background-color 0.3s ease;
+      }
+
+      button[type="submit"]:hover {
+        background-color: rgb(150, 150, 242);
+      }
+
+      h2.converted-value {
+        color: #007bff;
+        text-align: center;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="converter-container">
+      <h1>Unit Converter</h1>
+
+      <!-- Tab Menu -->
+      <div class="tab-menu">
+        <a id="tab-length" class="{% if active_tab == 'length' %}active{% endif %}">Length</a>
+        <a id="tab-weight" class="{% if active_tab == 'weight' %}active{% endif %}">Weight</a>
+        <a id="tab-temperature" class="{% if active_tab == 'temperature' %}active{% endif %}">Temperature</a>
+      </div>
+
+      <!-- Length Conversion Form -->
+      <form method="POST" id="length-form" class="{% if active_tab == 'length' %}active{% endif %}">
+        {% csrf_token %}
+        {{ length_form.as_p }}
+        <button type="submit" name="convert_length">Convert</button>
+        {% if length_value is not None %}
+        <h2>Result: {{ length_value }}</h2>
+        {% endif %}
+      </form>
+
+      <!-- Weight Conversion Form -->
+      <form method="POST" id="weight-form" class="{% if active_tab == 'weight' %}active{% endif %}">
+        {% csrf_token %}
+        {{ weight_form.as_p }}
+        <button type="submit" name="convert_weight">Convert</button>
+        {% if weight_value is not None %}
+        <h2>Result: {{ weight_value }}</h2>
+        {% endif %}
+      </form>
+
+      <!-- Temperature Conversion Form -->
+      <form method="POST" id="temp-form" class="{% if active_tab == 'temperature' %}active{% endif %}">
+        {% csrf_token %}
+        {{ temp_form.as_p }}
+        <button type="submit" name="convert_temperature">Convert</button>
+        {% if temp_value is not None %}
+        <h2>Result: {{ temp_value }}</h2>
+        {% endif %}
+      </form>
+    </div>
+
+    <script>
+      // JavaScript to handle form toggling and query parameter updates
+      document.getElementById('tab-length').addEventListener('click', function () {
+        updateTab('length');
+      });
+      document.getElementById('tab-weight').addEventListener('click', function () {
+        updateTab('weight');
+      });
+      document.getElementById('tab-temperature').addEventListener('click', function () {
+        updateTab('temperature');
+      });
+
+      function updateTab(tab) {
+        const currentUrl = new URL(window.location.href);
+        currentUrl.searchParams.set('tab', tab); // Update the 'tab' parameter in the URL
+        window.location.href = currentUrl.href; // Reload the page with the new parameter
+      }
+    </script>
+  </body>
+</html>
